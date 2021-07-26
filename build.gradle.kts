@@ -7,8 +7,7 @@ buildscript {
     dependencies {
         classpath (Plugins.gradle)
         classpath (Plugins.kotlin_gradle)
-        classpath("com.android.tools.build:gradle:4.2.1")
-//        classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
+        classpath (Plugins.hilt_plugin)
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
