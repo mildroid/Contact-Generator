@@ -1,6 +1,6 @@
 package com.mildroid.contactgenerator.domain
 
-interface UseCase {
+interface UseCase<in Params> {
 
-    operator fun invoke()
+    operator fun invoke(params: Params)
 }

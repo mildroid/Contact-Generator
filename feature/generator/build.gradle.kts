@@ -15,7 +15,13 @@ dependencies {
     implementation(Dependencies.core_ktx)
     implementation(Dependencies.appcompat)
     implementation(Dependencies.material)
+    implementation(Dependencies.lifecycle_extensions)
+
+    api(Dependencies.work_manager)
 
     implementation(Dependencies.hilt_android)
     kapt(Dependencies.hilt_compiler)
+
+    api(Dependencies.hilt_work)
+    kapt(Dependencies.hilt_work_compiler)
 }

@@ -6,11 +6,12 @@ object Versions {
     const val constraint_layout = "2.0.4"
     const val work = "2.5.0"
     const val coroutines = "1.5.1"
-    const val hilt = "2.35"
+    const val hilt = "2.37"
+    const val hilt_work = "1.0.0"
     const val lifecycle = "2.3.1"
     const val fragment = "1.3.6"
 
-    const val gradle_plugin = "4.2.2"
+    const val gradle_plugin = "7.0.0"
 }
 
 object Dependencies {
@@ -27,6 +28,9 @@ object Dependencies {
 
     const val hilt_android = "com.google.dagger:hilt-android:${Versions.hilt}"
     const val hilt_compiler = "com.google.dagger:hilt-android-compiler:${Versions.hilt}"
+
+    const val hilt_work = "androidx.hilt:hilt-work:${Versions.hilt_work}"
+    const val hilt_work_compiler = "androidx.hilt:hilt-compiler:${Versions.hilt_work}"
 
     const val lifecycle_runtime = "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0-alpha02"
     const val lifecycle_extensions = "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.lifecycle}"

@@ -1,18 +1,19 @@
 package com.mildroid.contactgenerator.domain
 
+import com.mildroid.contactgenerator.domain.model.GeneratorParams
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GenerateUseCase @Inject constructor(
     private val generator: Generator
 
-): UseCase {
+) : UseCase<GeneratorParams> {
 
-    override fun invoke() {
-        this.generator.generate("data - invoked")
+    override fun invoke(params: GeneratorParams) {
+        this.generator.generate(params)
     }
-}
 
-interface Generator {
+    fun cancelWork() = this.generator.cancel()
 
-    fun generate(data: String)
+    fun workerDetails() = this.generator.workerDetails()
 }
