@@ -22,6 +22,8 @@ class MainViewModel @Inject constructor(
     internal fun commander(command: String) {
         val commandSplitter = command.trim().split(" ").toMutableList()
 
+        command.log("vm Commander")
+
         when (commandSplitter.first()) {
             commandSplitter.removeAt(0) -> {
                 if (commandSplitter.size < 5) {

@@ -10,6 +10,9 @@ object Versions {
     const val hilt_work = "1.0.0"
     const val lifecycle = "2.3.1"
     const val fragment = "1.3.6"
+    const val compose = "1.0.1"
+    const val compose_activity = "1.3.1"
+    const val accompanist = "0.16.0"
 
     const val gradle_plugin = "7.0.0"
 }
@@ -37,7 +40,15 @@ object Dependencies {
     const val lifecycle_viewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycle}"
     const val lifecycle_common = "androidx.lifecycle:lifecycle-common-java8:${Versions.lifecycle}"
 
+    const val compose_ui = "androidx.compose.ui:ui:${Versions.compose}"
+    const val compose_ui_tooling = "androidx.compose.ui:ui-tooling:${Versions.compose}"
+    const val compose_io_tolling_preview = "androidx.compose.ui:ui-tooling-preview:${Versions.compose}"
+    const val compose_compiler = "androidx.compose.compiler:compiler:${Versions.compose}"
+    const val compose_material = "androidx.compose.material:material:${Versions.compose}"
+    const val compose_activity = "androidx.activity:activity-compose:${Versions.compose_activity}"
+
     const val fragment_ktx = "androidx.fragment:fragment-ktx:${Versions.fragment}"
+    const val accompanist = "com.google.accompanist:accompanist-systemuicontroller:${Versions.accompanist}"
 }
 
 object Plugins {

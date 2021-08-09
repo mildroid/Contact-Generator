@@ -9,12 +9,14 @@ plugins {
 
 android {
 //    don't know why but it comes with error when using [BuildConfig.compileSdkVersion]!
-    compileSdkVersion (30)
+    compileSdk = 30
+    buildToolsVersion = "30.0.3"
+    ndkVersion = "21.1.6352462"
 
     defaultConfig {
         applicationId = BuildConfig.applicationId
-        minSdkVersion (BuildConfig.minSdkVersion)
-        targetSdkVersion (BuildConfig.targetSdkVersion)
+        minSdk = BuildConfig.minSdkVersion
+        targetSdk = BuildConfig.targetSdkVersion
         versionCode = BuildConfig.versionCode
         versionName = BuildConfig.versionName
         buildFeatures.viewBinding = true
@@ -41,6 +43,20 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = Versions.compose
+    }
+
+    buildFeatures {
+        compose = true
+    }
+
+    packagingOptions {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
 }
 
 dependencies {
@@ -53,6 +69,12 @@ dependencies {
     implementation(Dependencies.appcompat)
     implementation(Dependencies.material)
     implementation(Dependencies.fragment_ktx)
+
+    implementation(Dependencies.compose_ui)
+    implementation(Dependencies.compose_ui_tooling)
+    implementation(Dependencies.compose_compiler)
+    implementation(Dependencies.compose_material)
+    implementation(Dependencies.compose_activity)
 
     implementation(Dependencies.hilt_android)
     kapt(Dependencies.hilt_compiler)

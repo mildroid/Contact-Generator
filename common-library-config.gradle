@@ -1,9 +1,9 @@
 android {
-    compileSdkVersion 30
+    compileSdk 30
 
     defaultConfig {
-        minSdkVersion BuildConfig.minSdkVersion
-        targetSdkVersion BuildConfig.targetSdkVersion
+        minSdk BuildConfig.minSdkVersion
+        targetSdk BuildConfig.targetSdkVersion
         versionCode BuildConfig.versionCode
         versionName BuildConfig.versionName
 
