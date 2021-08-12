@@ -24,14 +24,33 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.mildroid.contactgenerator.core.log
+import com.mildroid.contactgenerator.domain.model.state.IdleState
+import com.mildroid.contactgenerator.domain.model.state.MainStateEvent
+import com.mildroid.contactgenerator.domain.model.state.MainViewState
 import com.mildroid.contactgenerator.ui.theme.ComposeMainTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
+    private val output = mutableStateOf("")
+
+    init {
+        lifecycleScope.launchWhenStarted {
+            output.value += appDescription()
+
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.viewState.collect(::stateListener)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +68,6 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun Terminal() {
-        val focusManager = LocalFocusManager.current
         val scope = rememberCoroutineScope()
         val scrollState = rememberScrollState()
 
@@ -58,7 +76,7 @@ class MainActivity : ComponentActivity() {
                 .fillMaxSize()
                 .background(Color(0xFF0A0A0A))
         ) {
-            var name by remember { mutableStateOf("Contact Generator v0.1") }
+            var output by remember { output }
 
             Box(
                 modifier = Modifier
@@ -68,14 +86,13 @@ class MainActivity : ComponentActivity() {
                     .verticalScroll(state = scrollState)
             ) {
                 Text(
-                    text = name,
+                    text = output,
                     Modifier
                         .align(Alignment.BottomStart)
                         .padding(start = 16.dp, end = 16.dp, top = 16.dp)
 
                 )
             }
-
 
             val textField =
                 remember { mutableStateOf(TextFieldValue()) }
@@ -85,6 +102,7 @@ class MainActivity : ComponentActivity() {
                 onValueChange = {
                     textField.value = it
                 },
+                singleLine = true,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .weight(1f)
@@ -103,12 +121,12 @@ class MainActivity : ComponentActivity() {
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(onDone = {
-                    name += ("\n$ " + textField.value.text)
+                    commander(textField.value.text)
+                    output += ("\n$ " + textField.value.text)
 
                     scope.launch {
-                        scrollState.animateScrollTo(scrollState.maxValue + 50)
+                        scrollState.animateScrollTo(scrollState.maxValue + 150)
                     }
-                    focusManager.clearFocus()
                     textField.value = TextFieldValue("")
                 })
             )
@@ -116,4 +134,40 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun stateListener(state: MainViewState) {
+        output.value += when (state) {
+            is MainViewState.Canceled -> "\n${state.workerInfo.id} was canceled."
+            is MainViewState.Finished -> "\n${state.workerInfo.id} was finished successfully."
+            is MainViewState.Idle -> {
+                when (state.idleState) {
+                    IdleState.GenerateHelp -> getString(R.string.generate_description)
+                    IdleState.Help -> getString(R.string.app_description)
+                    IdleState.Idle -> ""
+                    is IdleState.Invalid -> "\n\$${(state.idleState as IdleState.Invalid)
+                        .command.split(" ").first()} is not" +
+                            " a valid command. see \$help for more information."
+                }
+            }
+            is MainViewState.Working -> "\n${state.workerInfo.id} is in progress"
+        }
+    }
+
+    private fun commander(command: String) {
+        viewModel.onEvent(
+            when (command.split(" ")[0]) {
+                "generate" -> MainStateEvent.Generate(command.removePrefix("generate "))
+                "help" -> MainStateEvent.Help(command.removePrefix("help "))
+                "export" -> MainStateEvent.Export(command.removePrefix("export "))
+                "cancel" -> MainStateEvent.Cancel
+                "clean" -> MainStateEvent.Clean
+                else -> MainStateEvent.NotValid(command)
+            }
+        )
+    }
+
+    private fun appDescription(): String {
+        return getString(R.string.app_name) +
+                " v" + BuildConfig.VERSION_NAME +
+                getString(R.string.app_description)
+    }
 }

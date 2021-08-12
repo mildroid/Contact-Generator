@@ -19,7 +19,6 @@ android {
         targetSdk = BuildConfig.targetSdkVersion
         versionCode = BuildConfig.versionCode
         versionName = BuildConfig.versionName
-        buildFeatures.viewBinding = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -86,4 +85,6 @@ dependencies {
 
     implementation(Dependencies.coroutines)
     implementation(Dependencies.coroutines_android)
+
+//    debugImplementation ("com.squareup.leakcanary:leakcanary-android:2.7")
 }

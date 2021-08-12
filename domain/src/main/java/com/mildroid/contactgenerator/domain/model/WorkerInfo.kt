@@ -10,7 +10,7 @@ data class WorkerInfo(
 ) {
 
     companion object {
-        fun emptyWorkerInfo() =
+        fun idleWorkerInfo() =
             WorkerInfo(null, WorkerState.IDLE, null)
     }
 

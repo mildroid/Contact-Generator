@@ -1,14 +1,15 @@
 package com.mildroid.contactgenerator.generator
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import androidx.hilt.work.HiltWorker
-import androidx.work.*
-import com.mildroid.contactgenerator.core.*
+import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
+import androidx.work.WorkerParameters
+import com.mildroid.contactgenerator.core.GENERATOR_NOTIFICATION_ID
+import com.mildroid.contactgenerator.core.GENERATOR_WORKER_PARAM_MAX
+import com.mildroid.contactgenerator.core.GENERATOR_WORKER_PARAM_MIN
+import com.mildroid.contactgenerator.core.GENERATOR_WORKER_PARAM_TEMPLATE
 import com.mildroid.contactgenerator.generator.util.ContactOperations
 import com.mildroid.contactgenerator.generator.util.NotificationOperations
 import dagger.assisted.Assisted

@@ -12,7 +12,6 @@ object Versions {
     const val fragment = "1.3.6"
     const val compose = "1.0.1"
     const val compose_activity = "1.3.1"
-    const val accompanist = "0.16.0"
 
     const val gradle_plugin = "7.0.0"
 }
@@ -48,7 +47,6 @@ object Dependencies {
     const val compose_activity = "androidx.activity:activity-compose:${Versions.compose_activity}"
 
     const val fragment_ktx = "androidx.fragment:fragment-ktx:${Versions.fragment}"
-    const val accompanist = "com.google.accompanist:accompanist-systemuicontroller:${Versions.accompanist}"
 }
 
 object Plugins {

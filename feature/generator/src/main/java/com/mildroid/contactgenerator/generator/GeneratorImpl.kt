@@ -1,19 +1,12 @@
 package com.mildroid.contactgenerator.generator
 
-import android.os.WorkSource
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.asFlow
 import androidx.work.*
 import com.mildroid.contactgenerator.core.*
 import com.mildroid.contactgenerator.domain.Generator
 import com.mildroid.contactgenerator.domain.model.GeneratorParams
 import com.mildroid.contactgenerator.domain.model.WorkerInfo
-import com.mildroid.contactgenerator.domain.model.state.WorkerState
 import com.mildroid.contactgenerator.generator.mapper.toWorkerInfo
-import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
@@ -63,7 +56,7 @@ class GeneratorImpl @Inject constructor(
                         if (it.size > 0)
                             it.first().toWorkerInfo()
                          else
-                             WorkerInfo.emptyWorkerInfo()
+                             WorkerInfo.idleWorkerInfo()
                     }
             )
         }

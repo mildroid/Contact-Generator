@@ -1,14 +1,19 @@
 package com.mildroid.contactgenerator
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
-import androidx.work.WorkManager
+import com.mildroid.contactgenerator.core.length
 import com.mildroid.contactgenerator.core.log
 import com.mildroid.contactgenerator.domain.GenerateUseCase
 import com.mildroid.contactgenerator.domain.model.GeneratorParams
-import com.mildroid.contactgenerator.domain.model.WorkerInfo
+import com.mildroid.contactgenerator.domain.model.state.IdleState
+import com.mildroid.contactgenerator.domain.model.state.MainStateEvent
+import com.mildroid.contactgenerator.domain.model.state.MainViewState
+import com.mildroid.contactgenerator.domain.model.state.WorkerState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
-import java.util.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,32 +24,52 @@ class MainViewModel @Inject constructor(
 
     private lateinit var generatorParams: GeneratorParams
 
-    internal fun commander(command: String) {
-        val commandSplitter = command.trim().split(" ").toMutableList()
+    private val _viewState =
+        MutableStateFlow<MainViewState>(MainViewState.Idle(IdleState.Idle))
+    val viewState: StateFlow<MainViewState>
+        get() = _viewState
 
-        command.log("vm Commander")
-
-        when (commandSplitter.first()) {
-            commandSplitter.removeAt(0) -> {
-                if (commandSplitter.size < 5) {
-//                    notify view to invalid command
-                    return
+    init {
+        viewModelScope.launch {
+            generateUseCase
+                .workerDetails()
+                .collect {
+                    _viewState.value  = when (it.state) {
+                        WorkerState.CANCELED, WorkerState.FAILED -> MainViewState.Canceled(it)
+                        WorkerState.RUNNING, WorkerState.ENQUEUED -> MainViewState.Working(it)
+                        WorkerState.SUCCEEDED -> MainViewState.Finished(it)
+                        WorkerState.IDLE -> MainViewState.Idle(IdleState.Idle)
+                        WorkerState.BLOCKED -> TODO() /* for now this never happens :) */
+                    }
                 }
-
-                prepareGenerator(command.removePrefix("generate "))
-            }
         }
     }
 
-    private fun prepareGenerator(command: String) {
-        val rang = command.split(" to ")
-        val (min, max) = rang.first() to rang.last()
+    internal fun onEvent(event: MainStateEvent) {
+        when (event) {
+            MainStateEvent.Cancel -> cancelGenerating()
+            MainStateEvent.Clean -> TODO()
+            is MainStateEvent.Generate -> startGenerating(event.command)
+            is MainStateEvent.Help -> helper(event.msg)
+            is MainStateEvent.NotValid -> _viewState.value = MainViewState.Idle(IdleState.Invalid(event.command))
+            is MainStateEvent.Export -> TODO()
+        }
+    }
 
-        if (numberRangeValidator(min to max)) {
+    private fun helper(msg: String) = when {
+        msg.startsWith("--generate") ->
+            _viewState.value = MainViewState.Idle(IdleState.GenerateHelp)
+
+        else -> _viewState.value = MainViewState.Idle(IdleState.Help)
+    }
+
+    private fun startGenerating(command: String) {
+        val rang = command.split(" to ")
+
+        if (numberRangeValidator(rang.first() to rang.last())) {
             generateUseCase(this.generatorParams)
         } else {
-//            notify view to invalid command
-            return
+            _viewState.value = MainViewState.Idle(IdleState.Invalid(command))
         }
 
     }
@@ -54,10 +79,12 @@ class MainViewModel @Inject constructor(
         val max = range.second.split(" ").toMutableList()
 
         if (min.size != max.size) return false
+        if (min.size < 2) return false
 
         val actualMin = min.removeLast().toInt()
         val actualMax = max.removeLast().toInt()
 
+        if (actualMin.toString().length != actualMax.toString().length) return false
         if (min.joinToString() != max.joinToString()) return false
 //        if (min.size > 5) return false
 //        if (min.first() != max.first()) return false
@@ -75,14 +102,8 @@ class MainViewModel @Inject constructor(
         return true
     }
 
-    fun cancelGenerating() {
+    private fun cancelGenerating() = viewModelScope.launch {
         generateUseCase.cancelWork()
-    }
-
-    val workerDetails = flow<WorkerInfo> {
-        emitAll(
-            generateUseCase.workerDetails()
-        )
     }
 
 }
