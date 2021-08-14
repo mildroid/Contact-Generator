@@ -10,7 +10,7 @@ import com.mildroid.contactgenerator.core.GENERATOR_NOTIFICATION_ID
 import com.mildroid.contactgenerator.core.GENERATOR_WORKER_PARAM_MAX
 import com.mildroid.contactgenerator.core.GENERATOR_WORKER_PARAM_MIN
 import com.mildroid.contactgenerator.core.GENERATOR_WORKER_PARAM_TEMPLATE
-import com.mildroid.contactgenerator.generator.util.ContactOperations
+import com.mildroid.contactgenerator.core.ContactOperations
 import com.mildroid.contactgenerator.generator.util.NotificationOperations
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject

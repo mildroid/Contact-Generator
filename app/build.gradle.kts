@@ -62,6 +62,7 @@ dependencies {
     implementation(project(mapOf("path" to ":core")))
     implementation(project(mapOf("path" to ":domain")))
     implementation(project(mapOf("path" to ":feature:generator")))
+    implementation(project(mapOf("path" to ":feature:cleaner")))
 
     implementation(Dependencies.kotlin_stdlib)
     implementation(Dependencies.core_ktx)

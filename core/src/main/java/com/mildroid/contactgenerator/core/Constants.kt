@@ -11,3 +11,6 @@ const val GENERATOR_WORKER_PARAM_TEMPLATE = "com.mildroid.feature.contactgenerat
 const val GENERATOR_NOTIFICATION_CHANNEL_ID = "com.mildroid.feature.contactgenerator.GeneratorWorker.notificationChannelId"
 const val GENERATOR_NOTIFICATION_CHANNEL_NAME = "Generator"
 const val GENERATOR_NOTIFICATION_ID = 139
+
+const val CLEANER_ONE_TIME_WORK_REQUEST = "com.mildroid.feature.cleaner.CleanerImpl.cleanerOneTImeWorkRequest"
+const val CLEANER_WORKER_NAME = "com.mildroid.feature.cleaner.CleanerImpl.cleanerWorker"

@@ -1,5 +1,6 @@
 package com.mildroid.contactgenerator
 
+import android.Manifest
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.mildroid.contactgenerator.core.hasPermissions
 import com.mildroid.contactgenerator.core.log
 import com.mildroid.contactgenerator.domain.model.state.IdleState
 import com.mildroid.contactgenerator.domain.model.state.MainStateEvent
@@ -142,9 +144,12 @@ class MainActivity : ComponentActivity() {
                 when (state.idleState) {
                     IdleState.GenerateHelp -> getString(R.string.generate_description)
                     IdleState.Help -> getString(R.string.app_description)
+                    IdleState.Permission -> getString(R.string.permission_warning)
                     IdleState.Idle -> ""
-                    is IdleState.Invalid -> "\n\$${(state.idleState as IdleState.Invalid)
-                        .command.split(" ").first()} is not" +
+                    is IdleState.Invalid -> "\n\$${
+                        (state.idleState as IdleState.Invalid)
+                            .command.split(" ").first()
+                    } is not" +
                             " a valid command. see \$help for more information."
                 }
             }
@@ -155,7 +160,13 @@ class MainActivity : ComponentActivity() {
     private fun commander(command: String) {
         viewModel.onEvent(
             when (command.split(" ")[0]) {
-                "generate" -> MainStateEvent.Generate(command.removePrefix("generate "))
+                "generate" -> {
+                    if (hasPermissions(Manifest.permission.WRITE_CONTACTS)) {
+                        MainStateEvent.Generate(command.removePrefix("generate "))
+                    } else {
+                        MainStateEvent.Help("permission")
+                    }
+                }
                 "help" -> MainStateEvent.Help(command.removePrefix("help "))
                 "export" -> MainStateEvent.Export(command.removePrefix("export "))
                 "cancel" -> MainStateEvent.Cancel

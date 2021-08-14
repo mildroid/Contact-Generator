@@ -15,5 +15,6 @@ sealed class IdleState {
     object Idle: IdleState()
     object Help: IdleState()
     object GenerateHelp: IdleState()
+    object Permission: IdleState()
     data class Invalid(val command: String): IdleState()
 }

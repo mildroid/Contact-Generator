@@ -1,14 +1,17 @@
-package com.mildroid.contactgenerator.generator.util
+package com.mildroid.contactgenerator.core
 
 import android.content.ContentProviderOperation
 import android.content.Context
 import android.provider.ContactsContract
-import com.mildroid.contactgenerator.core.log
 
 
 class ContactOperations(private val context: Context) {
 
-    internal fun prepareContact(displayName: String) {
+    private val contentResolver by lazy {
+        context.contentResolver
+    }
+
+    fun prepareContact(displayName: String) {
 //        display names and the numbers are equals.
 
         val operations = ArrayList<ContentProviderOperation>()
@@ -60,11 +63,43 @@ class ContactOperations(private val context: Context) {
 
     private fun insertContact(operations: ArrayList<ContentProviderOperation>) {
         runCatching {
-            context
-                .contentResolver
+            contentResolver
                 .applyBatch(ContactsContract.AUTHORITY, operations)
         }.recover {
-            it.log()
+            it.log("adder")
+        }
+    }
+
+    fun prepareRemover() {
+
+        val rawUri = ContactsContract.RawContacts.CONTENT_URI.buildUpon()
+            .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build()
+
+        val operations: ArrayList<ContentProviderOperation> = ArrayList()
+
+        operations.add(
+            ContentProviderOperation.newDelete(ContactsContract.RawContacts.CONTENT_URI).withSelection(
+                ContactsContract.RawContacts._ID + ">? "
+                , arrayOf("-1")
+            ).build()
+        ) //sets deleted flag to 1
+
+        operations.add(
+            ContentProviderOperation.newDelete(rawUri).withSelection(
+                ContactsContract.RawContacts._ID + ">? "
+                , arrayOf("-1")
+            ).build()
+        ) //erases
+
+        removeContacts(operations)
+    }
+
+    private fun removeContacts(operations: ArrayList<ContentProviderOperation>) {
+        runCatching {
+            contentResolver
+                .applyBatch(ContactsContract.AUTHORITY, operations)
+        }.recover {
+            it.log("remover")
         }
     }
 }

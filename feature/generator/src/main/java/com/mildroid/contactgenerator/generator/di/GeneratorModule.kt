@@ -3,7 +3,7 @@ package com.mildroid.contactgenerator.generator.di
 import android.content.Context
 import androidx.work.WorkManager
 import com.mildroid.contactgenerator.domain.Generator
-import com.mildroid.contactgenerator.generator.util.ContactOperations
+import com.mildroid.contactgenerator.core.ContactOperations
 import com.mildroid.contactgenerator.generator.GeneratorImpl
 import com.mildroid.contactgenerator.generator.util.NotificationOperations
 import dagger.Module

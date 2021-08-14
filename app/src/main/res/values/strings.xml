@@ -1,12 +1,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Contact Generator</string>
 
-    <string name="app_description" tools:ignore="TypographyDashes">"\nUse \$generate for generate contacts with an specific range. see \$help --generate "
-                "for more details.\nUse \$cancel for cancel current working job.\n"</string>
+    <string name="app_description" tools:ignore="TypographyDashes">"\nUse \$generate to generate contacts with an specific range. see \$help --generate "
+                "for more details.\nUse \$cancel to cancel current working job.\nUse $clean to remove all of your contacts. be careful using it.\n"
+                "This app is not designed for noobs :). So it won't request you to give Contacts permission. you have to do it manually.\n"</string>
 
     <string name="generate_description">"\nUse this format to generate contacts:\n"
                 "$generate +[Country Code] [number with spaces] to [Country Code] [number with spaces]\n"
-                "like: $generate +98 935 123 4567 to +98 935 123 5698\n"
-                "note that any differences in numbers format lead to invalid command error.\n"
+                "like: $generate +98 935 123 4567 to +98 935 123 5698"
+                "note that any differences in numbers format lead to invalid command error."
                 "limit: only last part of numbers should be different."</string>
+
+    <string name="permission_warning">\nGive Contacts permission first.</string>
+
 </resources>

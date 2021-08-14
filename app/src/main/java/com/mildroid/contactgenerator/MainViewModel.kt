@@ -5,8 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import com.mildroid.contactgenerator.core.length
 import com.mildroid.contactgenerator.core.log
+import com.mildroid.contactgenerator.domain.CleanerUseCase
 import com.mildroid.contactgenerator.domain.GenerateUseCase
 import com.mildroid.contactgenerator.domain.model.GeneratorParams
+import com.mildroid.contactgenerator.domain.model.None
+import com.mildroid.contactgenerator.domain.model.WorkerInfo
 import com.mildroid.contactgenerator.domain.model.state.IdleState
 import com.mildroid.contactgenerator.domain.model.state.MainStateEvent
 import com.mildroid.contactgenerator.domain.model.state.MainViewState
@@ -18,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val generateUseCase: GenerateUseCase
+    private val generateUseCase: GenerateUseCase,
+    private val cleanerUseCase: CleanerUseCase
 
 ) : ViewModel() {
 
@@ -34,31 +38,46 @@ class MainViewModel @Inject constructor(
             generateUseCase
                 .workerDetails()
                 .collect {
-                    _viewState.value  = when (it.state) {
-                        WorkerState.CANCELED, WorkerState.FAILED -> MainViewState.Canceled(it)
-                        WorkerState.RUNNING, WorkerState.ENQUEUED -> MainViewState.Working(it)
-                        WorkerState.SUCCEEDED -> MainViewState.Finished(it)
-                        WorkerState.IDLE -> MainViewState.Idle(IdleState.Idle)
-                        WorkerState.BLOCKED -> TODO() /* for now this never happens :) */
-                    }
+                    workerStateHandler(it)
                 }
+        }
+    }
+
+    private fun workerStateHandler(workerInfo: WorkerInfo) {
+        _viewState.value = when (workerInfo.state) {
+            WorkerState.CANCELED, WorkerState.FAILED -> MainViewState.Canceled(workerInfo)
+            WorkerState.RUNNING, WorkerState.ENQUEUED -> MainViewState.Working(workerInfo)
+            WorkerState.SUCCEEDED -> MainViewState.Finished(workerInfo)
+            WorkerState.IDLE -> MainViewState.Idle(IdleState.Idle)
+            WorkerState.BLOCKED -> TODO() /* for now this never happens :) */
         }
     }
 
     internal fun onEvent(event: MainStateEvent) {
         when (event) {
             MainStateEvent.Cancel -> cancelGenerating()
-            MainStateEvent.Clean -> TODO()
+            MainStateEvent.Clean -> {
+                cleaner()
+                cleanerDetails()
+            }
             is MainStateEvent.Generate -> startGenerating(event.command)
             is MainStateEvent.Help -> helper(event.msg)
-            is MainStateEvent.NotValid -> _viewState.value = MainViewState.Idle(IdleState.Invalid(event.command))
+            is MainStateEvent.NotValid -> _viewState.value =
+                MainViewState.Idle(IdleState.Invalid(event.command))
             is MainStateEvent.Export -> TODO()
         }
+    }
+
+    private fun cleaner() {
+        cleanerUseCase(None())
     }
 
     private fun helper(msg: String) = when {
         msg.startsWith("--generate") ->
             _viewState.value = MainViewState.Idle(IdleState.GenerateHelp)
+
+        msg == "permission" ->
+            _viewState.value = MainViewState.Idle(IdleState.Permission)
 
         else -> _viewState.value = MainViewState.Idle(IdleState.Help)
     }
@@ -102,8 +121,16 @@ class MainViewModel @Inject constructor(
         return true
     }
 
-    private fun cancelGenerating() = viewModelScope.launch {
+    private fun cancelGenerating() {
         generateUseCase.cancelWork()
+    }
+
+    private fun cleanerDetails() = viewModelScope.launch {
+        cleanerUseCase
+            .workerDetails()
+            .collect {
+                workerStateHandler(it)
+            }
     }
 
 }
