@@ -1,6 +1,9 @@
 **FOR EDUCATIONAL USE ONLY**
 
 # Contact-Generator
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/59c069cb5a30428aafa11b1ec75a51e6)](https://app.codacy.com/gh/mildroid/Contact-Generator?utm_source=github.com&utm_medium=referral&utm_content=mildroid/Contact-Generator&utm_campaign=Badge_Grade_Settings)
+
 Command-based Clean Architecture modularized Android App that generates contacts in a given range.
 
 ![](https://media.giphy.com/media/dKNFdk5oIhRGGvFsoy/giphy.gif)
