@@ -4,9 +4,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.runtime.Composable
 
-/**
- * Dark color palette.
- */
 private val DarkColorPalette = darkColors(
     primary = Dark,
     primaryVariant = Dark,

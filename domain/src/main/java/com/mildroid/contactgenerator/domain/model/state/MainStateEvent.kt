@@ -3,7 +3,7 @@ package com.mildroid.contactgenerator.domain.model.state
 /**
  * Events that MainActivity could sends to ViewModel stands on MVI.
  */
-sealed class MainStateEvent() {
+sealed class MainStateEvent {
 
     /**
      * Generate contacts with given command.

@@ -55,6 +55,9 @@ object Dependencies {
     const val fragment_ktx = "androidx.fragment:fragment-ktx:${Versions.fragment}"
 }
 
+/**
+ * Plugins.
+ */
 object Plugins {
     const val kotlin_gradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
     const val gradle = "com.android.tools.build:gradle:${Versions.gradle_plugin}"
