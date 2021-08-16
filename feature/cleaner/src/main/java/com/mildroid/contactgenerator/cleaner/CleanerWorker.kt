@@ -9,6 +9,9 @@ import com.mildroid.contactgenerator.core.log
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
+/**
+ * Cleaner Worker that removes all contacts.
+ */
 @HiltWorker
 class CleanerWorker @AssistedInject constructor(
     private val contactOperations: ContactOperations,

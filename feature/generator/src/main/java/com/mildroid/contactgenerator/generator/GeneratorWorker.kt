@@ -17,6 +17,9 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
 
+/**
+ * Generates phone numbers in the given range with given template.
+ */
 @HiltWorker
 class GeneratorWorker @AssistedInject constructor(
     private val contactOperations: ContactOperations,

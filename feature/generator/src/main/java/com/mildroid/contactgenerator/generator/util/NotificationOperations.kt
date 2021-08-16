@@ -14,6 +14,9 @@ import com.mildroid.contactgenerator.generator.R
 import java.util.*
 import javax.inject.Inject
 
+/**
+ * Creates and handles notification channel for [GeneratorWorker]
+ */
 class NotificationOperations @Inject constructor(
     private val context: Context,
     private val workManager: WorkManager

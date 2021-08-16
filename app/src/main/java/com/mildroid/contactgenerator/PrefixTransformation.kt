@@ -5,15 +5,21 @@ import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 
+/**
+ * Provides ability to add $ before commands.
+ */
 class PrefixTransformation(private val prefix: String) : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
-        return PrefixFilter(text, prefix)
+        return prefixFilter(text, prefix)
     }
 }
 
-fun PrefixFilter(number: AnnotatedString, prefix: String): TransformedText {
+/**
+ * used in [PrefixTransformation].
+ */
+fun prefixFilter(number: AnnotatedString, prefix: String): TransformedText {
 
-    var out = prefix + number.text
+    val out = prefix + number.text
     val prefixOffset = prefix.length
 
     val numberOffsetTranslator = object : OffsetMapping {

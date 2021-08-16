@@ -1,3 +1,6 @@
+/**
+ * Versions.
+ */
 object Versions {
     const val kotlin = "1.5.21"
     const val core_ktx = "1.5.0"
@@ -16,6 +19,9 @@ object Versions {
     const val gradle_plugin = "7.0.0"
 }
 
+/**
+ * Dependencies.
+ */
 object Dependencies {
     const val kotlin_stdlib = "org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}"
     const val core_ktx = "androidx.core:core-ktx:${Versions.core_ktx}"

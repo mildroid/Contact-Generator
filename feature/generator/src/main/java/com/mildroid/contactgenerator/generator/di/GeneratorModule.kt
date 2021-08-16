@@ -13,6 +13,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * Dagger Module for Generator.
+ */
+
 @Module
 @InstallIn(SingletonComponent::class)
 object GeneratorModule {

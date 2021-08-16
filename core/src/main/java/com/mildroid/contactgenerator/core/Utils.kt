@@ -8,6 +8,9 @@ import androidx.core.content.ContextCompat
 import androidx.viewbinding.ViewBinding
 import kotlin.math.log10
 
+/**
+ * The main logger function.
+ */
 fun Any?.log(msg: Any? = "", type: Int = Log.DEBUG) {
     when (type) {
         Log.DEBUG -> Log.d(TAG, "$msg -> $this")
@@ -15,13 +18,10 @@ fun Any?.log(msg: Any? = "", type: Int = Log.DEBUG) {
     }
 }
 
-inline fun <reified T : ViewBinding> AppCompatActivity.viewBinding() =
-    ActivityViewBindingDelegate(T::class.java)
-
-fun Int.length(): Int {
-    return (log10(this.toDouble()) + 1).toInt()
-}
-
+/**
+ * Checks has given permissions.
+ * @return true if has.
+ */
 fun Context.hasPermissions(vararg permissions: String) = permissions.all {
     ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
 }

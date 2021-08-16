@@ -7,16 +7,18 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.mildroid.contactgenerator.core.CLEANER_ONE_TIME_WORK_REQUEST
 import com.mildroid.contactgenerator.core.CLEANER_WORKER_NAME
-import com.mildroid.contactgenerator.core.GENERATOR_ONE_TIME_WORK_REQUEST
-import com.mildroid.contactgenerator.core.log
 import com.mildroid.contactgenerator.domain.Cleaner
 import com.mildroid.contactgenerator.domain.model.WorkerInfo
 import com.mildroid.contactgenerator.domain.model.state.WorkerState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+
+/**
+ * The Implementation for [CleanerWorker].
+ */
 
 class CleanerImpl @Inject constructor(
     private val workManager: WorkManager
@@ -65,6 +67,9 @@ fun WorkInfo.toWorkerInfo(): WorkerInfo {
     )
 }
 
+/**
+ * [WorkInfo] state mapper to [WorkerState]
+ */
 fun WorkInfo.State.toWorkerState(): WorkerState {
     return when (this) {
         WorkInfo.State.ENQUEUED -> WorkerState.ENQUEUED

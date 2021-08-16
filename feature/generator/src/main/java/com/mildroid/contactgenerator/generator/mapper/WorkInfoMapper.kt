@@ -4,6 +4,9 @@ import androidx.work.WorkInfo
 import com.mildroid.contactgenerator.domain.model.WorkerInfo
 import com.mildroid.contactgenerator.domain.model.state.WorkerState
 
+/**
+ * [WorkInfo] mapper to [WorkerInfo]
+ */
 fun WorkInfo.toWorkerInfo(): WorkerInfo {
     return WorkerInfo(
         id,
@@ -12,6 +15,9 @@ fun WorkInfo.toWorkerInfo(): WorkerInfo {
     )
 }
 
+/**
+ * [WorkInfo] state mapper to [WorkerState]
+ */
 fun WorkInfo.State.toWorkerState(): WorkerState {
     return when (this) {
         WorkInfo.State.ENQUEUED -> WorkerState.ENQUEUED

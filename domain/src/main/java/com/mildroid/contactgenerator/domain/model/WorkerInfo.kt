@@ -3,6 +3,9 @@ package com.mildroid.contactgenerator.domain.model
 import com.mildroid.contactgenerator.domain.model.state.WorkerState
 import java.util.*
 
+/**
+ * WorkerInfo's
+ */
 data class WorkerInfo(
     val id: UUID?,
     val state: WorkerState,

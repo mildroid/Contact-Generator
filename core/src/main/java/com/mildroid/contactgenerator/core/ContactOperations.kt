@@ -4,7 +4,9 @@ import android.content.ContentProviderOperation
 import android.content.Context
 import android.provider.ContactsContract
 
-
+/**
+ * Main Contact Operations needed by Workers.
+ */
 class ContactOperations(private val context: Context) {
 
     private val contentResolver by lazy {

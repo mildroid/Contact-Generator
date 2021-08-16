@@ -4,6 +4,9 @@ import com.mildroid.contactgenerator.domain.model.GeneratorParams
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
+/**
+ * Generator useCase that handles operations on [GeneratorWorker]
+ */
 class GenerateUseCase @Inject constructor(
     private val generator: Generator
 

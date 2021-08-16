@@ -1,10 +1,7 @@
 package com.mildroid.contactgenerator
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.*
-import com.mildroid.contactgenerator.core.length
-import com.mildroid.contactgenerator.core.log
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.mildroid.contactgenerator.domain.CleanerUseCase
 import com.mildroid.contactgenerator.domain.GenerateUseCase
 import com.mildroid.contactgenerator.domain.model.GeneratorParams
@@ -15,10 +12,15 @@ import com.mildroid.contactgenerator.domain.model.state.MainStateEvent
 import com.mildroid.contactgenerator.domain.model.state.MainViewState
 import com.mildroid.contactgenerator.domain.model.state.WorkerState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * MainViewModel stands on LifeCycle components.
+ */
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val generateUseCase: GenerateUseCase,

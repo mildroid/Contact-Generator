@@ -38,6 +38,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
+/**
+ * The main activity that show terminal view.
+ */
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 

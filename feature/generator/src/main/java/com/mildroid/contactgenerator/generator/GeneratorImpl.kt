@@ -10,6 +10,9 @@ import com.mildroid.contactgenerator.generator.mapper.toWorkerInfo
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
+/**
+ * Implementation for [GeneratorWorker]
+ */
 class GeneratorImpl @Inject constructor(
     private val workManager: WorkManager
 
