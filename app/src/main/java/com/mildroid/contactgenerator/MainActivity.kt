@@ -19,7 +19,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -29,17 +28,18 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.mildroid.contactgenerator.core.hasPermissions
-import com.mildroid.contactgenerator.core.log
+import com.mildroid.contactgenerator.domain.model.state.ErrorState
 import com.mildroid.contactgenerator.domain.model.state.IdleState
 import com.mildroid.contactgenerator.domain.model.state.MainStateEvent
 import com.mildroid.contactgenerator.domain.model.state.MainViewState
 import com.mildroid.contactgenerator.ui.theme.ComposeMainTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 /**
- * The main activity that show terminal view.
+ * The main activity that shows terminal view.
  */
 
 @AndroidEntryPoint
@@ -76,6 +76,7 @@ class MainActivity : ComponentActivity() {
     fun Terminal() {
         val scope = rememberCoroutineScope()
         val scrollState = rememberScrollState()
+        val hasContactsPermission = hasPermissions(Manifest.permission.WRITE_CONTACTS)
 
         Column(
             modifier = Modifier
@@ -95,8 +96,8 @@ class MainActivity : ComponentActivity() {
                     text = output,
                     Modifier
                         .align(Alignment.BottomStart)
-                        .padding(start = 16.dp, end = 16.dp, top = 16.dp)
-
+                        .padding(start = 16.dp, end = 16.dp, top = 16.dp),
+                    color = Color.White
                 )
             }
 
@@ -114,6 +115,7 @@ class MainActivity : ComponentActivity() {
                     .weight(1f)
                     .fillMaxWidth(),
                 colors = TextFieldDefaults.textFieldColors(
+                    cursorColor = Color.White,
                     backgroundColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
@@ -127,7 +129,12 @@ class MainActivity : ComponentActivity() {
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(onDone = {
-                    commander(textField.value.text)
+                    var command = textField.value.text
+                    if (!hasContactsPermission
+                        && (command.startsWith("generate") || command.startsWith("clean"))
+                    ) command = "permissionDenied"
+
+                    commander(command)
                     output += ("\n$ " + textField.value.text)
 
                     scope.launch {
@@ -140,42 +147,39 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun stateListener(state: MainViewState) {
+    private suspend fun stateListener(state: MainViewState) {
+        delay(125)
+
         output.value += when (state) {
             is MainViewState.Canceled -> "\n${state.workerInfo.id} was canceled."
             is MainViewState.Finished -> "\n${state.workerInfo.id} was finished successfully."
-            is MainViewState.Idle -> {
-                when (state.idleState) {
-                    IdleState.GenerateHelp -> getString(R.string.generate_description)
-                    IdleState.Help -> getString(R.string.app_description)
-                    IdleState.Permission -> getString(R.string.permission_warning)
-                    IdleState.Idle -> ""
-                    is IdleState.Invalid -> "\n\$${
-                        (state.idleState as IdleState.Invalid)
-                            .command.split(" ").first()
-                    } is not" +
-                            " a valid command. see \$help for more information."
-                }
-            }
+            is MainViewState.Idle -> idleStateListener(state.idleState)
             is MainViewState.Working -> "\n${state.workerInfo.id} is in progress"
+        }
+    }
+
+    private fun idleStateListener(state: IdleState): String {
+        return when (state) {
+            IdleState.GenerateHelp -> getString(R.string.generate_description)
+            IdleState.Help -> getString(R.string.app_description)
+            IdleState.Permission -> getString(R.string.permission_warning)
+            IdleState.Idle -> ""
+            is IdleState.Invalid -> "\n\$${
+                state.command.split(" ").first()
+            } is not a valid command. See \$help for more information."
         }
     }
 
     private fun commander(command: String) {
         viewModel.onEvent(
             when (command.split(" ")[0]) {
-                "generate" -> {
-                    if (hasPermissions(Manifest.permission.WRITE_CONTACTS)) {
-                        MainStateEvent.Generate(command.removePrefix("generate "))
-                    } else {
-                        MainStateEvent.Help("permission")
-                    }
-                }
+                "generate" -> MainStateEvent.Generate(command.removePrefix("generate "))
                 "help" -> MainStateEvent.Help(command.removePrefix("help "))
                 "export" -> MainStateEvent.Export(command.removePrefix("export "))
                 "cancel" -> MainStateEvent.Cancel
                 "clean" -> MainStateEvent.Clean
-                else -> MainStateEvent.NotValid(command)
+                "permissionDenied" -> MainStateEvent.Error(ErrorState.PermissionDenied)
+                else -> MainStateEvent.Error(ErrorState.InvalidCommand(command))
             }
         )
     }

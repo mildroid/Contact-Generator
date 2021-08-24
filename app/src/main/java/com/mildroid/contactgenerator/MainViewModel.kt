@@ -7,10 +7,7 @@ import com.mildroid.contactgenerator.domain.GenerateUseCase
 import com.mildroid.contactgenerator.domain.model.GeneratorParams
 import com.mildroid.contactgenerator.domain.model.None
 import com.mildroid.contactgenerator.domain.model.WorkerInfo
-import com.mildroid.contactgenerator.domain.model.state.IdleState
-import com.mildroid.contactgenerator.domain.model.state.MainStateEvent
-import com.mildroid.contactgenerator.domain.model.state.MainViewState
-import com.mildroid.contactgenerator.domain.model.state.WorkerState
+import com.mildroid.contactgenerator.domain.model.state.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,6 +29,7 @@ class MainViewModel @Inject constructor(
 
     private val _viewState =
         MutableStateFlow<MainViewState>(MainViewState.Idle(IdleState.Idle))
+
     val viewState: StateFlow<MainViewState>
         get() = _viewState
 
@@ -58,15 +56,18 @@ class MainViewModel @Inject constructor(
     internal fun onEvent(event: MainStateEvent) {
         when (event) {
             MainStateEvent.Cancel -> cancelGenerating()
-            MainStateEvent.Clean -> {
-                cleaner()
-                cleanerDetails()
-            }
+            MainStateEvent.Clean -> cleanerDetails()
             is MainStateEvent.Generate -> startGenerating(event.command)
             is MainStateEvent.Help -> helper(event.msg)
-            is MainStateEvent.NotValid -> _viewState.value =
-                MainViewState.Idle(IdleState.Invalid(event.command))
-            is MainStateEvent.Export -> TODO()
+            is MainStateEvent.Error -> errorHandler(event.error)
+            is MainStateEvent.Export -> TODO() /* Not Implemented yet */
+        }
+    }
+
+    private fun errorHandler(error: ErrorState) {
+        _viewState.value = when (error) {
+            is ErrorState.InvalidCommand -> MainViewState.Idle(IdleState.Invalid(error.command))
+            ErrorState.PermissionDenied ->  MainViewState.Idle(IdleState.Permission)
         }
     }
 
@@ -78,19 +79,25 @@ class MainViewModel @Inject constructor(
         msg.startsWith("--generate") ->
             _viewState.value = MainViewState.Idle(IdleState.GenerateHelp)
 
-        msg == "permission" ->
-            _viewState.value = MainViewState.Idle(IdleState.Permission)
-
         else -> _viewState.value = MainViewState.Idle(IdleState.Help)
     }
 
     private fun startGenerating(command: String) {
-        val rang = command.split(" to ")
+
+        fun invalidCommand() {
+            _viewState.value = MainViewState.Idle(IdleState.Invalid(command))
+        }
+
+        val rang = command
+            .split(" to ")
+            .also {
+                if (it.size < 2) invalidCommand()
+            }
 
         if (numberRangeValidator(rang.first() to rang.last())) {
             generateUseCase(this.generatorParams)
         } else {
-            _viewState.value = MainViewState.Idle(IdleState.Invalid(command))
+            invalidCommand()
         }
 
     }
@@ -107,9 +114,6 @@ class MainViewModel @Inject constructor(
 
         if (actualMin.toString().length != actualMax.toString().length) return false
         if (min.joinToString() != max.joinToString()) return false
-//        if (min.size > 5) return false
-//        if (min.first() != max.first()) return false
-//        if (!min.first().startsWith("+")) return false
         if (!min.first().startsWith("+")) return false
         if (min.size == 1) return false
 
@@ -128,6 +132,8 @@ class MainViewModel @Inject constructor(
     }
 
     private fun cleanerDetails() = viewModelScope.launch {
+        cleaner()
+
         cleanerUseCase
             .workerDetails()
             .collect {

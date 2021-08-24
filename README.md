@@ -5,15 +5,15 @@ Command-based Clean Architecture modularized Android App that generates contacts
 
 ![](https://media.giphy.com/media/dKNFdk5oIhRGGvFsoy/giphy.gif)
 
-## What is going on
-In february 2020 twitter puoblishd [an article](https://privacy.twitter.com/en/blog/2020/an-incident-impacting-your-account-identity) about some kind of attack on their APIs.
+## What does this app do
+In february 2020 twitter published [an article](https://privacy.twitter.com/en/blog/2020/an-incident-impacting-your-account-identity) about some kind of attack on their APIs.
 Attackers were using a large network of fake accounts to exploit Twitter API and match usernames to phone numbers. Actually, they used a feature, smart use of that to find
 phone numbers associated with accounts.
-Apps like **WhatsApp** are still harmful.
+Contact Generator will generates phone numbers and inserted them to phones contact list.Of course, the app can use for some nasty purposes (like above) but the main goal of this project is education.
 
 ## Libraries used
 
-*   Clean Arc along with MVI
+*   Clean Architecture along with MVI
 *   Android Support Libraries
 *   [Jetpack Compose](https://developer.android.com/jetpack/compose)
 *   [WorkManager](https://developer.android.com/topic/libraries/architecture/workmanager)

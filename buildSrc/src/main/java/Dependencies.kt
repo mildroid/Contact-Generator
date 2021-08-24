@@ -16,7 +16,7 @@ object Versions {
     const val compose = "1.0.1"
     const val compose_activity = "1.3.1"
 
-    const val gradle_plugin = "7.0.0"
+    const val gradle_plugin = "7.0.1"
 }
 
 /**

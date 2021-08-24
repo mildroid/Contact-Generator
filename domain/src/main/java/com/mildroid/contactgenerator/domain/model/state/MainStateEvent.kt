@@ -1,17 +1,17 @@
 package com.mildroid.contactgenerator.domain.model.state
 
 /**
- * Events that MainActivity could sends to ViewModel stands on MVI.
+ * Events that MainActivity could sends to ViewModel. stands on MVI.
  */
 sealed class MainStateEvent {
 
     /**
-     * Generate contacts with given command.
+     * Generate contacts with the given range.
      */
     data class Generate(val command: String): MainStateEvent()
 
     /**
-     * Help the user.
+     * Helps the user.
      */
     data class Help(val msg: String) : MainStateEvent()
 
@@ -23,7 +23,7 @@ sealed class MainStateEvent {
     /**
      * wtf bro?
      */
-    data class NotValid(val command: String): MainStateEvent()
+    data class Error(val error: ErrorState): MainStateEvent()
 
     /**
      * Removes all contacts.
@@ -31,8 +31,17 @@ sealed class MainStateEvent {
     object Clean : MainStateEvent()
 
     /**
-     * Cancel current working job.
+     * Cancels current working job.
      */
     object Cancel : MainStateEvent()
 
+}
+
+/**
+ * Error State handler.
+ */
+sealed class ErrorState {
+
+    data class InvalidCommand(var command: String) : ErrorState()
+    object PermissionDenied : ErrorState()
 }
